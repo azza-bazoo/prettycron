@@ -21,6 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////////
 
+if ((!moment || !later) && (typeof require !== 'undefined')) {
+  var moment = require('moment');
+  var cronParser = require('later').cronParser;
+}
+
 (function() {
 
   /*
@@ -172,15 +177,14 @@
         later(60, true).getNext(schedule)
       ).calendar();
   };
-
+  
   //----------------
   
-  // attach ourselves to window in the browser, and to exports in Node  
-  var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window;
-  
-  global_obj.prettyCron = {
-    toString: toString,
-    getNext: getNext
-  };
+  // attach ourselves to window in the browser, and to exports in Node,
+  // so our functions can always be called as prettyCron.toString()
+  var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window.prettyCron = {};
+
+  global_obj.toString = toString;
+  global_obj.getNext = getNext;
 
 }).call(this);
