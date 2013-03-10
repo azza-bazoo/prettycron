@@ -21,11 +21,11 @@ Include prettycron.js after adding [moment.js](http://momentjs.com/) and [later.
 Simply use `npm` and `require`:
 
 ```
-$ npm install prettyCron
+$ npm install prettycron
 ```
 
 ```js
-var prettyCron = require('prettyCron');
+var prettyCron = require('prettycron');
 ```
 
 
@@ -39,8 +39,8 @@ prettyCron exposes two methods, both of which take a cron specification as the o
 Returns a human-readable sentence describing all the times this cron will run.
 
 ```js
-prettyCron.toString("* */5 * * * *");
-// returns "Every 5 minutes"
+prettyCron.toString("37 10 * * * *");
+// returns "10:37 every day"
 ```
 
 #### prettyCron.getNext(cron)
