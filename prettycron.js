@@ -43,7 +43,7 @@
    */
   var numberToDateName = function(value, type) {
     if (type == 'dow') {
-      return moment().day(value).format('ddd');
+      return moment().day(value - 1).format('ddd');
     } else if (type == 'mon') {
       return moment().month(value - 1).format('MMM');
     }
@@ -61,11 +61,11 @@
     var last_val = '' + numbers.pop();
     var output_text = '';
 
-    for (p in numbers) {
-      if (output_text.lenght > 0) {
+    for (var i=0, value; value=numbers[i]; i++) {
+      if (output_text.length > 0) {
         output_text += ', ';
       }
-      output_text += numberToDateName(p, type);
+      output_text += numberToDateName(value, type);
     }
     return output_text + ' and ' + numberToDateName(last_val, type);
   };
@@ -75,7 +75,7 @@
    * have zero-fill functions, but alas, they're private.
    */
   var zeroPad = function(x) {
-    return (x < 10)? '0' + x : x;
+    return (x < 10) ? '0' + x : x;
   };
 
   //----------------
@@ -92,9 +92,9 @@
       // hour or minute, print them in HH:MM format
     
       var hm = [];
-      for (h in schedule['h']) {
-        for (m in schedule['m']) {
-          hm.push(zeroPad(h) + ':' + zeroPad(m));
+      for (var i=0; i < schedule['h'].length; i++) {
+        for (var j=0; j < schedule['m'].length; j++) {
+          hm.push(zeroPad(schedule['h'][i]) + ':' + zeroPad(schedule['m'][j]));
         }
       }
       if (hm.length < 2) {
@@ -102,6 +102,9 @@
       } else {
         var last_val = hm.pop();
         output_text = hm.join(', ') + ' and ' + last_val;
+      }
+      if (!schedule['d'] && !schedule['D']) {
+        output_text += ' every day';
       }
 
     } else {
@@ -127,7 +130,7 @@
     if (schedule['D']) { // runs only on specific day(s) of month
       output_text += ' on the ' + numberList(schedule['D']);
       if (!schedule['M']) {
-        output_text += ' every month';
+        output_text += ' of every month';
       }
     }
     
