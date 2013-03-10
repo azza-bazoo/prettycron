@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 //
 //  prettycron.js
-//  Generates human-readable sentences from cron runspecs
+//  Generates human-readable sentences from a schedule string in cron format
 //
 //  Based on an earlier version by Pehr Johansson
 //  http://dsysadm.blogspot.com.au/2012/09/human-readable-cron-expressions-using.html
@@ -56,7 +56,9 @@
     return (x < 10)? '0' + x : x;
   };
 
-  var toString = function(schedule) {
+  //----------------
+
+  var scheduleToSentence = function(schedule) {
     var hmText = 'Every ';
     // If max two of h or m, print in HH:MM format
     if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2) {
@@ -108,11 +110,24 @@
     return hmText;
   };
 
+  var toString = function(cronspec) {
+    var schedule = cronParser().parse(cronspec, false);
+    return scheduleToSentence(schedule['schedules'][0]);
+  };
+
+  var getNext = function(cronspec) {
+    var schedule = cronParser().parse(cronspec, false);
+    return moment(later(60,true).getNext(schedule)).calendar();
+  };
+
+  //----------------
+  
   // attach ourselves to window in the browser, and to exports in Node  
   var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window;
   
   global_obj.prettyCron = {
-    toString: toString
+    toString: toString,
+    getNext: getNext
   };
 
 }).call(this);
