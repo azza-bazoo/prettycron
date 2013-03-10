@@ -1,6 +1,6 @@
-# prettycron
+# prettyCron
 
-prettycron is a simple JavaScript deuglifier for cron schedules: it prints out a human-readable interpretation of when the schedule will run.
+prettyCron is a simple JavaScript deuglifier for cron schedules: it prints out a human-readable interpretation of when the schedule will run.
 
 Perhaps you'd like to check out [the examples](http://htmlpreview.github.com/?https://github.com/azza-bazoo/prettycron/blob/master/example.html)!
 
@@ -21,18 +21,18 @@ Include prettycron.js after adding [moment.js](http://momentjs.com/) and [later.
 Simply use `npm` and `require`:
 
 ```
-$ npm install prettycron
+$ npm install prettyCron
 ```
 
 ```js
-var prettycron = require('prettycron');
+var prettyCron = require('prettyCron');
 ```
 
 
 Usage
 ----------------------
 
-prettycron exposes two methods, both of which take a cron specification as the only argument.
+prettyCron exposes two methods, both of which take a cron specification as the only argument.
 
 #### prettyCron.toString(cron)
 
@@ -56,9 +56,9 @@ prettyCron.getNext("0 * * * *");
 Credits
 ----------------------
 
-prettycron was [originally written](http://dsysadm.blogspot.com.au/2012/09/human-readable-cron-expressions-using.html) by @dunse and posted to [gist](https://gist.github.com/dunse/3714957). It's licensed under [LGPLv3](http://www.gnu.org/copyleft/lesser.html).
+prettyCron was [originally written](http://dsysadm.blogspot.com.au/2012/09/human-readable-cron-expressions-using.html) by [dunse](https://github.com/dunse) and posted to [gist](https://gist.github.com/dunse/3714957). It's licensed under [LGPLv3](http://www.gnu.org/copyleft/lesser.html).
 
-prettycron depends on:
-* [moment.js](http://momentjs.com/) by @timrwood
-* [later.js](https://github.com/bunkat/later) by @bunkat
+prettyCron depends on:
+* [moment.js](http://momentjs.com/) by [timrwood](https://github.com/timrwood)
+* [later.js](https://github.com/bunkat/later) by [bunkat](https://github.com/bunkat)
 
