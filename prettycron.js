@@ -23,13 +23,25 @@
 
 (function() {
 
-  var printLoop = function(pArray) {
-    if (pArray.length < 2) { return moment()._lang.ordinal(pArray); }
-    var lastE = pArray.pop();
-    return pArray.join(', ') + ' and ' + moment()._lang.ordinal(lastE);
+  /*
+   * For an array of numbers, e.g. a list of hours in a schedule,
+   * return a string listing out all of the values (complete with
+   * "and" plus ordinal text on the last item).
+   */
+  var numberList = function(numbers) {
+    if (numbers.length < 2) {
+      return moment()._lang.ordinal(numbers);
+    }
+
+    var last_val = numbers.pop();
+    return numbers.join(', ') + ' and ' + moment()._lang.ordinal(last_val);
   };
 
-  var formatDay = function(value, type) {
+  /*
+   * Parse a number into day of week, or a month name;
+   * used in dateList below.
+   */
+  var numberToDateName = function(value, type) {
     if (type == 'dow') {
       return moment().day(value).format('ddd');
     } else if (type == 'mon') {
@@ -37,8 +49,12 @@
     }
   };
 
-  var printDateLoop = function(pArray, type) {
-    if (pArray.length < 2) { return formatDay(''+pArray[0], type); }
+  /*
+   * From an array of numbers corresponding to dates (given in type: either
+   * days of the week, or months), return a string listing all the values.
+   */
+  var dateList = function(pArray, type) {
+    if (pArray.length < 2) { return numberToDateName(''+pArray[0], type); }
     var lastE = '' + pArray.pop();
   
     var retString = '';
@@ -46,22 +62,32 @@
       if (retString.lenght > 0) {
         retString+= ', ';
       }
-      retString+= formatDay(p, type);
+      retString+= numberToDateName(p, type);
     }
-    return retString + ' and ' + formatDay(lastE, type);
+    return retString + ' and ' + numberToDateName(lastE, type);
   };
 
-  // both Moment and Later have zero-fill functions, but they're private
+  /*
+   * Pad to equivalent of sprintf('%02d'). Both moment.js and later.js
+   * have zero-fill functions, but alas, they're private.
+   */
   var zeroPad = function(x) {
     return (x < 10)? '0' + x : x;
   };
 
   //----------------
 
+  /*
+   * Given a schedule from later.js (i.e. after parsing the cronspec),
+   * generate a friendly sentence description.
+   */
   var scheduleToSentence = function(schedule) {
     var hmText = 'Every ';
-    // If max two of h or m, print in HH:MM format
+    
     if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2) {
+      // If there are only one or two specified values for
+      // hour or minute, print them in HH:MM format
+    
       var hm = [];
       for (h in schedule['h']) {
         for (m in schedule['m']) {
@@ -74,50 +100,64 @@
         var lastE = hm.pop();
         hmText = hm.join(', ') + ' and ' + lastE;
       }
+
     } else {
-      if(schedule['h']) { // Hour
-        if (schedule['m']) { // Got specific minutes
-          hmText+= printLoop(schedule['m']) + ' minute past the ' + printLoop(schedule['h']) + ' hour';
-        } else { // Every minute
-          hmText+= 'minute of ' + printLoop(schedule['h']) + ' hour';
+      // Otherwise, list out every specified hour/minute value.
+
+      if(schedule['h']) { // runs only at specific hours
+        if (schedule['m']) { // and only at specific minutes
+          hmText+= numberList(schedule['m']) + ' minute past the ' + numberList(schedule['h']) + ' hour';
+        } else { // specific hours, but every minute
+          hmText+= 'minute of ' + numberList(schedule['h']) + ' hour';
         }
-      } else if(schedule['m']) { // Minute
+      } else if(schedule['m']) { // every hour, but specific minutes
         if (schedule['m'].length == 1 && schedule['m'][0] == 0) {
           hmText+= 'hour, on the hour';
         } else {
-          hmText+= printLoop(schedule['m']) + ' minute past every hour';
+          hmText+= numberList(schedule['m']) + ' minute past every hour';
         }
-      } else { // * for both Hour and Minute
+      } else { // cronspec has "*" for both hour and minute
         hmText+= 'minute';
       }
     }
     
-    if (schedule['D']) { // Day of month
-      hmText+= ' on the ' + printLoop(schedule['D']);
+    if (schedule['D']) { // runs only on specific day(s) of month
+      hmText+= ' on the ' + numberList(schedule['D']);
       if (!schedule['M']) {
         hmText+= ' every month';
       }
     }
     
-    if (schedule['M']) { // Month
-      hmText+= ' in ' + printDateLoop(schedule['M'], 'mon');
+    if (schedule['M']) { // runs only in specific months
+      hmText+= ' in ' + dateList(schedule['M'], 'mon');
     }
     
-    if (schedule['d']) { // Day of week
-      hmText+= ' on ' + printDateLoop(schedule['d'], 'dow');
+    if (schedule['d']) { // runs only on specific day(s) of week
+      hmText+= ' on ' + dateList(schedule['d'], 'dow');
     }
     
     return hmText;
   };
 
+  //----------------
+  
+  /*
+   * Given a cronspec, return the human-readable string.
+   */
   var toString = function(cronspec) {
     var schedule = cronParser().parse(cronspec, false);
     return scheduleToSentence(schedule['schedules'][0]);
   };
 
+  /*
+   * Given a cronspec, return a friendly string for when it will next run.
+   * (This is just a wrapper for later.js and moment.js)
+   */
   var getNext = function(cronspec) {
     var schedule = cronParser().parse(cronspec, false);
-    return moment(later(60,true).getNext(schedule)).calendar();
+    return moment(
+        later(60, true).getNext(schedule)
+      ).calendar();
   };
 
   //----------------
