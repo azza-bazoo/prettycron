@@ -1,6 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////
-//  prettycron.js - Copyright (c) 2012 Pehr Johansson <pehr.l.johansson@gmail.com>
 //
+//  prettycron.js
+//  Generates human-readable sentences from cron runspecs
+//
+//  Based on an earlier version by Pehr Johansson
+//  http://dsysadm.blogspot.com.au/2012/09/human-readable-cron-expressions-using.html
+//
+////////////////////////////////////////////////////////////////////////////////////
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
 //  by the Free Software Foundation, either version 3 of the License, or
@@ -15,15 +21,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////////
 
-function ord(n) {
-        var sfx = ["th","st","nd","rd"];
-        var val = n%100;
-        return n + (sfx[(val-20)%10] || sfx[val] || sfx[0]);
-}
 function printLoop(pArray) {
-        if (pArray.length < 2) { return ord(pArray); }
+        if (pArray.length < 2) { return moment()._lang.ordinal(pArray); }
         var lastE = pArray.pop();
-        return pArray.join(', ') + ' and ' + ord(lastE);
+        return pArray.join(', ') + ' and ' + moment()._lang.ordinal(lastE);
 }
 String.prototype.df = function(type) {
         if (type == 'dow') {
