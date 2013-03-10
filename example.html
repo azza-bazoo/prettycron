@@ -11,7 +11,7 @@
     function printCron(cron) {
       var s1 = cronParser().parse(cron, false);
       document.write('<b>Cron expression:</b> <code>' + cron + '</code><br/>');
-      document.write('<b>Human readable: </b>' + getPrettyCron(s1['schedules'][0]) + '<br/>');
+      document.write('<b>Human readable: </b>' + prettyCron.toString(s1['schedules'][0]) + '<br/>');
       document.write('<b>Next run: </b>' + moment(later(60,true).getNext(s1)).calendar() + '<br/><br/>');
     }
     printCron('15 3,8,10,12,14,16,18 16 * *');
