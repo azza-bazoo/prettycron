@@ -134,14 +134,21 @@
       }
     }
     
-    if (schedule['M']) { // runs only in specific months
+    if (schedule['d']) { // runs only on specific day(s) of week
+      if (schedule['D']) {
+        // if both day fields are specified, cron uses both; superuser.com/a/348372
+        output_text += ' and every ';
+      } else {
+        output_text += ' on ';
+      }
+      output_text += dateList(schedule['d'], 'dow');
+    }
+    
+    if (schedule['M']) {
+      // runs only in specific months; put this output last
       output_text += ' in ' + dateList(schedule['M'], 'mon');
     }
-    
-    if (schedule['d']) { // runs only on specific day(s) of week
-      output_text += ' on ' + dateList(schedule['d'], 'dow');
-    }
-    
+
     return output_text;
   };
 
