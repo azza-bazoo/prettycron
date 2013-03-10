@@ -53,18 +53,21 @@
    * From an array of numbers corresponding to dates (given in type: either
    * days of the week, or months), return a string listing all the values.
    */
-  var dateList = function(pArray, type) {
-    if (pArray.length < 2) { return numberToDateName(''+pArray[0], type); }
-    var lastE = '' + pArray.pop();
-  
-    var retString = '';
-    for (p in pArray) {
-      if (retString.lenght > 0) {
-        retString+= ', ';
-      }
-      retString+= numberToDateName(p, type);
+  var dateList = function(numbers, type) {
+    if (numbers.length < 2) {
+      return numberToDateName(''+numbers[0], type);
     }
-    return retString + ' and ' + numberToDateName(lastE, type);
+
+    var last_val = '' + numbers.pop();
+    var output_text = '';
+
+    for (p in numbers) {
+      if (output_text.lenght > 0) {
+        output_text += ', ';
+      }
+      output_text += numberToDateName(p, type);
+    }
+    return output_text + ' and ' + numberToDateName(last_val, type);
   };
 
   /*
@@ -82,7 +85,7 @@
    * generate a friendly sentence description.
    */
   var scheduleToSentence = function(schedule) {
-    var hmText = 'Every ';
+    var output_text = 'Every ';
     
     if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2) {
       // If there are only one or two specified values for
@@ -95,10 +98,10 @@
         }
       }
       if (hm.length < 2) {
-        hmText = hm[0];
+        output_text = hm[0];
       } else {
-        var lastE = hm.pop();
-        hmText = hm.join(', ') + ' and ' + lastE;
+        var last_val = hm.pop();
+        output_text = hm.join(', ') + ' and ' + last_val;
       }
 
     } else {
@@ -106,37 +109,37 @@
 
       if(schedule['h']) { // runs only at specific hours
         if (schedule['m']) { // and only at specific minutes
-          hmText+= numberList(schedule['m']) + ' minute past the ' + numberList(schedule['h']) + ' hour';
+          output_text += numberList(schedule['m']) + ' minute past the ' + numberList(schedule['h']) + ' hour';
         } else { // specific hours, but every minute
-          hmText+= 'minute of ' + numberList(schedule['h']) + ' hour';
+          output_text += 'minute of ' + numberList(schedule['h']) + ' hour';
         }
       } else if(schedule['m']) { // every hour, but specific minutes
         if (schedule['m'].length == 1 && schedule['m'][0] == 0) {
-          hmText+= 'hour, on the hour';
+          output_text += 'hour, on the hour';
         } else {
-          hmText+= numberList(schedule['m']) + ' minute past every hour';
+          output_text += numberList(schedule['m']) + ' minute past every hour';
         }
       } else { // cronspec has "*" for both hour and minute
-        hmText+= 'minute';
+        output_text += 'minute';
       }
     }
     
     if (schedule['D']) { // runs only on specific day(s) of month
-      hmText+= ' on the ' + numberList(schedule['D']);
+      output_text += ' on the ' + numberList(schedule['D']);
       if (!schedule['M']) {
-        hmText+= ' every month';
+        output_text += ' every month';
       }
     }
     
     if (schedule['M']) { // runs only in specific months
-      hmText+= ' in ' + dateList(schedule['M'], 'mon');
+      output_text += ' in ' + dateList(schedule['M'], 'mon');
     }
     
     if (schedule['d']) { // runs only on specific day(s) of week
-      hmText+= ' on ' + dateList(schedule['d'], 'dow');
+      output_text += ' on ' + dateList(schedule['d'], 'dow');
     }
     
-    return hmText;
+    return output_text;
   };
 
   //----------------
