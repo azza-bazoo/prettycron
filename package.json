@@ -1,0 +1,17 @@
+{
+  "name": "prettycron",
+  "version": "0.9.0",
+  "description": "Display cron runspecs in human-readable format",
+  "main": "prettycron.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azza-bazoo/prettycron.git"
+  },
+  "author": "Hourann Bosci (http://hourann.com)",
+  "license": "LGPL",
+  "readmeFilename": "README.md",
+  "dependencies" : {
+    "moment" : ">=2.0.0",
+    "later" : ">=0.0.11"
+  }
+}
