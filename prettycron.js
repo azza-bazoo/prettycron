@@ -26,15 +26,17 @@ function printLoop(pArray) {
         var lastE = pArray.pop();
         return pArray.join(', ') + ' and ' + moment()._lang.ordinal(lastE);
 }
-String.prototype.df = function(type) {
-        if (type == 'dow') {
-                return moment().day(this).format('ddd');
-        } else if (type == 'mon') {
-                return moment().month(this-1).format('MMM');
-        }
+
+var formatDay = function(value, type) {
+  if (type == 'dow') {
+    return moment().day(value).format('ddd');
+  } else if (type == 'mon') {
+    return moment().month(value - 1).format('MMM');
+  }
 }
+
 function printDateLoop(pArray, type) {
-        if (pArray.length < 2) { return (''+pArray[0]).df(type); }
+        if (pArray.length < 2) { return formatDay(''+pArray[0], type); }
         var lastE = '' + pArray.pop();
 
         var retString = '';
@@ -42,10 +44,11 @@ function printDateLoop(pArray, type) {
                 if (retString.lenght > 0) {
                         retString+= ', ';
                 }
-                retString+= p.df(type);
+                retString+= formatDay(p, type);
         }
-        return retString + ' and ' + lastE.df(type);
+        return retString + ' and ' + formatDay(lastE, type);
 }
+
 function zeroPad(x) {
         return (x < 10)? '0' + x : x;
 }
