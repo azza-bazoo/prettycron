@@ -24,7 +24,7 @@
 if ((!moment || !later) && (typeof require !== 'undefined')) {
   var moment = require('moment');
   var later = require('later').later;
-  var cronParser = require('later').cronParser;
+  var cronParser = require('later').parse.cron;
 }
 
 (function() {
@@ -92,11 +92,11 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    */
   var scheduleToSentence = function(schedule) {
     var output_text = 'Every ';
-    
+
     if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2) {
       // If there are only one or two specified values for
       // hour or minute, print them in HH:MM format
-    
+
       var hm = [];
       for (var i=0; i < schedule['h'].length; i++) {
         for (var j=0; j < schedule['m'].length; j++) {
@@ -132,14 +132,14 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
         output_text += 'minute';
       }
     }
-    
+
     if (schedule['D']) { // runs only on specific day(s) of month
       output_text += ' on the ' + numberList(schedule['D']);
       if (!schedule['M']) {
         output_text += ' of every month';
       }
     }
-    
+
     if (schedule['d']) { // runs only on specific day(s) of week
       if (schedule['D']) {
         // if both day fields are specified, cron uses both; superuser.com/a/348372
@@ -149,7 +149,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       }
       output_text += dateList(schedule['d'], 'dow');
     }
-    
+
     if (schedule['M']) {
       // runs only in specific months; put this output last
       output_text += ' in ' + dateList(schedule['M'], 'mon');
@@ -159,12 +159,12 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   };
 
   //----------------
-  
+
   /*
    * Given a cronspec, return the human-readable string.
    */
-  var toString = function(cronspec) {
-    var schedule = cronParser().parse(cronspec, false);
+  var toString = function(cronspec, sixth) {
+    var schedule = cronParser(cronspec, sixth);
     return scheduleToSentence(schedule['schedules'][0]);
   };
 
@@ -172,15 +172,15 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    * Given a cronspec, return a friendly string for when it will next run.
    * (This is just a wrapper for later.js and moment.js)
    */
-  var getNext = function(cronspec) {
-    var schedule = cronParser().parse(cronspec, false);
+  var getNext = function(cronspec, sixth) {
+    var schedule = cronParser(cronspec, sixth);
     return moment(
         later(60, true).getNext(schedule)
       ).calendar();
   };
-  
+
   //----------------
-  
+
   // attach ourselves to window in the browser, and to exports in Node,
   // so our functions can always be called as prettyCron.toString()
   var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window.prettyCron = {};
