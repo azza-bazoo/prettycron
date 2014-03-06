@@ -12,6 +12,6 @@
   "readmeFilename": "README.md",
   "dependencies" : {
     "moment" : ">=2.0.0",
-    "later" : ">=0.0.11"
+    "later" : "~1.1.6"
   }
 }
