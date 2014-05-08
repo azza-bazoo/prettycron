@@ -169,14 +169,20 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   };
 
   /*
+   * Given a cronspec, return the next date for when it will next run.
+   * (This is just a wrapper for later.js)
+   */
+  var getNextDate = function(cronspec, sixth) {
+    var schedule = cronParser(cronspec, sixth);
+    return later.schedule(schedule).next();
+  };
+
+  /*
    * Given a cronspec, return a friendly string for when it will next run.
    * (This is just a wrapper for later.js and moment.js)
    */
   var getNext = function(cronspec, sixth) {
-    var schedule = cronParser(cronspec, sixth);
-    return moment(
-        later.schedule(schedule).next()
-      ).calendar();
+    return moment( getNextDate( cronspec, sixth ) ).calendar();
   };
 
   //----------------
@@ -187,5 +193,6 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
 
   global_obj.toString = toString;
   global_obj.getNext = getNext;
+  global_obj.getNextDate = getNextDate;
 
 }).call(this);
