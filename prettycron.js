@@ -35,11 +35,11 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    */
   var numberList = function(numbers) {
     if (numbers.length < 2) {
-      return moment()._lang.ordinal(numbers);
+      return moment()._locale.ordinal(numbers);
     }
 
     var last_val = numbers.pop();
-    return numbers.join(', ') + ' and ' + moment()._lang.ordinal(last_val);
+    return numbers.join(', ') + ' and ' + moment()._locale.ordinal(last_val);
   };
 
   /*
