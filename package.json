@@ -1,6 +1,6 @@
 {
   "name": "prettycron",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Display cron runspecs in human-readable format",
   "main": "prettycron.js",
   "repository": {
