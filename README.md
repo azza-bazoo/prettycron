@@ -1,4 +1,4 @@
-# prettyCron
+# prettyCron [![Build Status](https://travis-ci.org/azza-bazoo/prettycron.svg?branch=master)](https://travis-ci.org/azza-bazoo/prettycron)
 
 prettyCron is a simple JavaScript deuglifier for cron schedules: it prints out a human-readable interpretation of when the schedule will run.
 
