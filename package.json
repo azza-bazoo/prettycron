@@ -11,7 +11,7 @@
   "license": "LGPL",
   "readmeFilename": "README.md",
   "dependencies" : {
-    "moment" : ">=2.0.0",
-    "later" : "~1.1.6"
+    "moment" : "^2.8.4",
+    "later" : "^1.1.6"
   }
 }
