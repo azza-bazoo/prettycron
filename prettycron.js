@@ -97,9 +97,12 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       // hour or minute, print them in HH:MM format
 
       var hm = [];
+      var hour = moment();
       for (var i=0; i < schedule['h'].length; i++) {
         for (var j=0; j < schedule['m'].length; j++) {
-          hm.push(zeroPad(schedule['h'][i]) + ':' + zeroPad(schedule['m'][j]));
+          hour.hour(schedule['h'][i]);
+          hour.minute(schedule['m'][j]);
+          hm.push(hour.format("hh:mm A"));
         }
       }
       if (hm.length < 2) {
@@ -173,15 +176,23 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    */
   var getNextDate = function(cronspec, sixth) {
     var schedule = later.parse.cron(cronspec, sixth);
-    return later.schedule(schedule).next();
+    return moment.utc(later.schedule(schedule).next()).format("ddd, MMM Do YYYY, h:mm:ss A");;
   };
 
+  /*
+   * Given a cronspec, return the next run date as a moment
+   * (useful for the getNext 
+   */
+  var getNextMoment = function(cronspec, sixth) {
+    var schedule = later.parse.cron(cronspec, sixth);
+    return moment.utc(later.schedule(schedule).next());
+  };
   /*
    * Given a cronspec, return a friendly string for when it will next run.
    * (This is just a wrapper for later.js and moment.js)
    */
   var getNext = function(cronspec, sixth) {
-    return moment( getNextDate( cronspec, sixth ) ).calendar();
+    return getNextMoment(cronspec, sixth).calendar();
   };
 
   //----------------
