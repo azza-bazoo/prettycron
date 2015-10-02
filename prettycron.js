@@ -172,6 +172,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    * (This is just a wrapper for later.js)
    */
   var getNextDate = function(cronspec, sixth) {
+    later.date.localTime();
     var schedule = later.parse.cron(cronspec, sixth);
     return later.schedule(schedule).next();
   };
