@@ -132,7 +132,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       }
     }
 
-    if (schedule['D']) { // runs only on specific day(s) of month
+    if (schedule['D'] && schedule['D'].length !== 31) { // runs only on specific day(s) of month
       output_text += ' on the ' + numberList(schedule['D']);
       if (!schedule['M']) {
         output_text += ' of every month';
