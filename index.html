@@ -51,7 +51,7 @@
   Returns a human-readable sentence describing all the times this cron will run.
 
   <pre>
-  prettyCron.toString("37 10 * * * *");
+  prettyCron.toString("37 10 * * *");
   // returns "10:37 every day"
   </pre>
 
@@ -80,7 +80,7 @@
   <p>It's licensed under <a href="http://www.gnu.org/copyleft/lesser.html">LGPLv3</a>.</p>
 
 
-  
+
   <script src="later.min.js" type="text/javascript"></script>
   <script src="moment.min.js" type="text/javascript"></script>
   <script src="prettycron.js" type="text/javascript"></script>
@@ -92,7 +92,7 @@
         + '<b>Human readable:</b> ' + prettyCron.toString(cron) + '<br/>'
         + '<b>Next run:</b> ' + prettyCron.getNext(cron) + '</p>';
     }
-    
+
     window.addEventListener('load', function() {
       document.getElementById('output').innerHTML = '';
       printCron('0 * * * *');
