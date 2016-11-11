@@ -150,8 +150,12 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     }
 
     if (schedule['M']) {
-      // runs only in specific months; put this output last
-      output_text += ' in ' + dateList(schedule['M'], 'mon');
+      if( schedule['M'].length === 12 ) {
+        output_text += ' day of every month'
+      } else {
+        // runs only in specific months; put this output last
+        output_text += ' in ' + dateList(schedule['M'], 'mon');
+      }
     }
 
     return output_text;
