@@ -50,6 +50,7 @@ suite('extended format with seconds', function() {
       { cron: '*/20 * * * * *', readable: 'Every 20 seconds', sixth: true },
       { cron: '*/30 * * * * *', readable: 'Every minute starting at the first and 30th second', sixth: true },
       { cron: '5 * * * * *', readable: 'Every minute starting at the 5th second', sixth: true },
+      { cron: '30 * * * * *', readable: 'Every minute starting at the 30th second', sixth: true },
       { cron: '2,5,20 * * * * *', readable: 'Every minute starting at the 2, 5 and 20th second', sixth: true },
       { cron: '15-17 * * * * *', readable: 'Every minute starting at the 15, 16 and 17th second', sixth: true },
     ].forEach(assertReadableOutput);
