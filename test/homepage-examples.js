@@ -37,6 +37,7 @@ suite('extended format with seconds', function() {
     [
       { cron: '0 0 18 1/1 * ? *', readable: '18:00:00', sixth: true },
       { cron: '* * * * * *', readable: 'Every second', sixth: true },
+      { cron: '*/4 2 4 * * *', readable: 'Every 4 seconds on the 2nd minute past the 4th hour', sixth: true },
       { cron: '30 15 9 * * *', readable: '09:15:30 every day', sixth: true },
       { cron: '*/30 15 9 * * *', readable: '09:15:00 and 09:15:30 every day', sixth: true },
       { cron: '*/2 * * * * *', readable: 'Every 2 seconds', sixth: true },
@@ -48,11 +49,11 @@ suite('extended format with seconds', function() {
       { cron: '*/12 * * * * *', readable: 'Every 12 seconds', sixth: true },
       { cron: '*/15 * * * * *', readable: 'Every 15 seconds', sixth: true },
       { cron: '*/20 * * * * *', readable: 'Every 20 seconds', sixth: true },
-      { cron: '*/30 * * * * *', readable: 'Every minute starting at the first and 30th second', sixth: true },
-      { cron: '5 * * * * *', readable: 'Every minute starting at the 5th second', sixth: true },
-      { cron: '30 * * * * *', readable: 'Every minute starting at the 30th second', sixth: true },
-      { cron: '2,5,20 * * * * *', readable: 'Every minute starting at the 2, 5 and 20th second', sixth: true },
-      { cron: '15-17 * * * * *', readable: 'Every minute starting at the 15, 16 and 17th second', sixth: true },
+      { cron: '*/30 * * * * *', readable: 'Every minute starting on the first and 30th second', sixth: true },
+      { cron: '5 * * * * *', readable: 'Every minute starting on the 5th second', sixth: true },
+      { cron: '30 * * * * *', readable: 'Every minute starting on the 30th second', sixth: true },
+      { cron: '2,5,20 * * * * *', readable: 'Every minute starting on the 2, 5 and 20th second', sixth: true },
+      { cron: '15-17 * * * * *', readable: 'Every minute starting on the 15, 16 and 17th second', sixth: true },
     ].forEach(assertReadableOutput);
   });
 });

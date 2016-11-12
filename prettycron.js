@@ -57,7 +57,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     if( numbers.length > 2 && s > 0 ) {
       return s + ' seconds';
     } else {
-      return 'minute starting at the ' + (numbers.length === 2 && s === 30 ? 'first and 30th second' : numberList(numbers) + ' second');
+      return 'minute starting on the ' + (numbers.length === 2 && s === 30 ? 'first and 30th second' : numberList(numbers) + ' second');
     }
   };
 
@@ -139,8 +139,16 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
 
     } else {
       // Otherwise, list out every specified hour/minute value.
-
+      var hasSpecificSeconds = schedule['s'] && (
+          schedule['s'].length > 1 && schedule['s'].length < 60 ||
+          schedule['s'].length === 1 && schedule['s'][0] !== 0 );
+      if(hasSpecificSeconds) {
+        output_text += secondsNumberList(schedule['s']);
+      }
       if(schedule['h']) { // runs only at specific hours
+        if( hasSpecificSeconds ) {
+          output_text += ' on the ';
+        }
         if (schedule['m']) { // and only at specific minutes
           output_text += numberList(schedule['m']) + ' minute past the ' + numberList(schedule['h']) + ' hour';
         } else { // specific hours, but every minute
@@ -152,12 +160,9 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
         } else {
           output_text += numberList(schedule['m']) + ' minute past every hour';
         }
-      } else if(schedule['s'] && (schedule['s'].length > 1 && schedule['s'].length < 60 ||
-                schedule['s'].length === 1 && schedule['s'][0] !== 0 ) ) { // every minute, but specific seconds
-        output_text += secondsNumberList(schedule['s']);
       } else if(schedule['s'] && schedule['s'].length === 60 ) { // every second
         output_text += 'second';
-      } else { // cronspec has "*" for both hour and minute
+      } else if( !hasSpecificSeconds ) { // cronspec has "*" for both hour and minute
         output_text += 'minute';
       }
     }
