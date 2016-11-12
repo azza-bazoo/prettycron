@@ -1,7 +1,12 @@
 var assert = require('assert');
 
 var prettyCron = require('../');
-
+function assertReadableOutput(item) {
+  test(item.cron + ' == ' + item.readable, function() {
+    var readable_output = prettyCron.toString(item.cron, !!item.sixth );
+    assert.equal(readable_output, item.readable);
+  } );
+}
 suite('homepage examples', function() {
   suite('human-readable output', function() {
 
@@ -21,15 +26,32 @@ suite('homepage examples', function() {
       { cron: '15 3,8,10,12,14,16,18 16 * *', readable: 'Every 15th minute past the 3, 8, 10, 12, 14, 16 and 18th hour on the 16th of every month' },
       { cron: '2 8,10,12,14,16,18 * 8 0,3', readable: 'Every 2nd minute past the 8, 10, 12, 14, 16 and 18th hour on Sun and Wed in Aug' },
       { cron: '0 0 18 1/1 * ?', readable: '00:00 on the 18th day of every month' },
-      { cron: '0 0 18 1/1 * ? *', readable: '18:00', sixth: true },
-      { cron: '30 10 * * 0', readable: '10:30 on Sun' }
-    ].forEach(function(item) {
-      test(item.cron, function() {
-        var readable_output = prettyCron.toString(item.cron, !!item.sixth );
-        assert.equal(readable_output, item.readable);
-      });
-    });
-
+      { cron: '30 10 * * 0', readable: '10:30 on Sun' },
+      { cron: '* * * * *', readable: 'Every minute' },
+    ].forEach(assertReadableOutput);
   });
 });
 
+suite('extended format with seconds', function() {
+  suite('human-readable output', function() {
+    [
+      { cron: '0 0 18 1/1 * ? *', readable: '18:00:00', sixth: true },
+      { cron: '* * * * * *', readable: 'Every second', sixth: true },
+      { cron: '30 15 9 * * *', readable: '09:15:30 every day', sixth: true },
+      { cron: '*/30 15 9 * * *', readable: '09:15:00 and 09:15:30 every day', sixth: true },
+      { cron: '*/2 * * * * *', readable: 'Every 2 seconds', sixth: true },
+      { cron: '*/3 * * * * *', readable: 'Every 3 seconds', sixth: true },
+      { cron: '*/4 * * * * *', readable: 'Every 4 seconds', sixth: true },
+      { cron: '*/5 * * * * *', readable: 'Every 5 seconds', sixth: true },
+      { cron: '*/6 * * * * *', readable: 'Every 6 seconds', sixth: true },
+      { cron: '*/10 * * * * *', readable: 'Every 10 seconds', sixth: true },
+      { cron: '*/12 * * * * *', readable: 'Every 12 seconds', sixth: true },
+      { cron: '*/15 * * * * *', readable: 'Every 15 seconds', sixth: true },
+      { cron: '*/20 * * * * *', readable: 'Every 20 seconds', sixth: true },
+      { cron: '*/30 * * * * *', readable: 'Every minute starting at the first and 30th second', sixth: true },
+      { cron: '5 * * * * *', readable: 'Every minute starting at the 5th second', sixth: true },
+      { cron: '2,5,20 * * * * *', readable: 'Every minute starting at the 2, 5 and 20th second', sixth: true },
+      { cron: '15-17 * * * * *', readable: 'Every minute starting at the 15, 16 and 17th second', sixth: true },
+    ].forEach(assertReadableOutput);
+  });
+});

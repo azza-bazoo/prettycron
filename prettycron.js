@@ -42,14 +42,33 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     return numbers.join(', ') + ' and ' + moment()._locale.ordinal(last_val);
   };
 
+  var stepSize = function(numbers) {
+    if( numbers.length === 1 ) return 0;
+    if( numbers.length === 2 ) return numbers[1] - numbers[0];
+    return numbers[2] - numbers[1] === numbers[1] ? numbers[1] : 0;
+  };
+  /*
+   * For an array of numbers of seconds, return a string
+   * listing all the values unless they represent a frequency divisible by 60:
+   * /2, /3, /4, /5, /6, /10, /12, /15, /20 and /30
+   */
+  var secondsNumberList = function(numbers) {
+    var s = stepSize(numbers);
+    if( numbers.length > 2 && s > 0 ) {
+      return s + ' seconds';
+    } else {
+      return 'minute starting at the ' + (numbers.length === 2 && s === 30 ? 'first and 30th second' : numberList(numbers) + ' second');
+    }
+  };
+
   /*
    * Parse a number into day of week, or a month name;
    * used in dateList below.
    */
   var numberToDateName = function(value, type) {
-    if (type == 'dow') {
+    if (type === 'dow') {
       return moment().day(value - 1).format('ddd');
-    } else if (type == 'mon') {
+    } else if (type === 'mon') {
       return moment().month(value - 1).format('MMM');
     }
   };
@@ -89,17 +108,23 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    * Given a schedule from later.js (i.e. after parsing the cronspec),
    * generate a friendly sentence description.
    */
-  var scheduleToSentence = function(schedule) {
+  var scheduleToSentence = function(schedule, useSeconds) {
     var output_text = 'Every ';
 
-    if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2) {
+    if (schedule['h'] && schedule['m'] && schedule['s'] && schedule['h'].length <= 2 && schedule['m'].length <= 2 && schedule['s'].length <= 2) {
       // If there are only one or two specified values for
-      // hour or minute, print them in HH:MM format
+      // hour or minute, print them in HH:MM format, or HH:MM:ss if seconds are used
 
       var hm = [];
+      var m = moment();
       for (var i=0; i < schedule['h'].length; i++) {
         for (var j=0; j < schedule['m'].length; j++) {
-          hm.push(zeroPad(schedule['h'][i]) + ':' + zeroPad(schedule['m'][j]));
+          for (var k=0; k < schedule['s'].length; k++) {
+            m.hour(schedule['h'][i]);
+            m.minute(schedule['m'][j]);
+            m.second(schedule['s'][k]);
+            hm.push(m.format( useSeconds ? 'HH:mm:ss' : 'HH:mm'));
+          }
         }
       }
       if (hm.length < 2) {
@@ -122,11 +147,16 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
           output_text += 'minute of ' + numberList(schedule['h']) + ' hour';
         }
       } else if(schedule['m']) { // every hour, but specific minutes
-        if (schedule['m'].length == 1 && schedule['m'][0] == 0) {
+        if (schedule['m'].length === 1 && schedule['m'][0] === 0) {
           output_text += 'hour, on the hour';
         } else {
           output_text += numberList(schedule['m']) + ' minute past every hour';
         }
+      } else if(schedule['s'] && (schedule['s'].length > 1 && schedule['s'].length < 60 ||
+                schedule['s'].length === 1 && schedule['s'][0] !== 0 ) ) { // every minute, but specific seconds
+        output_text += secondsNumberList(schedule['s']);
+      } else if(schedule['s'] && schedule['s'].length === 60 ) { // every second
+        output_text += 'second';
       } else { // cronspec has "*" for both hour and minute
         output_text += 'minute';
       }
@@ -168,7 +198,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    */
   var toString = function(cronspec, sixth) {
     var schedule = later.parse.cron(cronspec, sixth);
-    return scheduleToSentence(schedule['schedules'][0]);
+    return scheduleToSentence(schedule['schedules'][0], sixth);
   };
 
   /*
