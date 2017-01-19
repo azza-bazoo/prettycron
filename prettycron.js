@@ -188,6 +188,23 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     return moment( getNextDate( cronspec, sixth ) ).calendar();
   };
 
+  /*
+   * Given a cronspec and numDates, return a list of formatted dates
+   * of the next set of runs.
+   * (This is just a wrapper for later.js and moment.js)
+   */
+  var getNextDates = function(cronspec, numDates, sixth) {
+    var schedule = later.parse.cron(cronspec, sixth);
+    var nextDates = later.schedule(schedule).next(numDates);
+
+    var nextPrettyDates = []
+    for (var i = 0; i < nextDates.length; i++) {
+      nextPrettyDates.push(moment(nextDates[i]).calendar());
+    }
+
+    return nextPrettyDates;
+  };
+
   //----------------
 
   // attach ourselves to window in the browser, and to exports in Node,
@@ -197,5 +214,6 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   global_obj.toString = toString;
   global_obj.getNext = getNext;
   global_obj.getNextDate = getNextDate;
+  global_obj.getNextDates = getNextDates;
 
 }).call(this);
