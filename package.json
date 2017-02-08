@@ -10,12 +10,12 @@
   "author": "Hourann Bosci (http://hourann.com)",
   "license": "LGPL",
   "readmeFilename": "README.md",
-  "dependencies" : {
-    "moment" : "^2.8.4",
-    "later" : "^1.1.6"
+  "dependencies": {
+    "later": "^1.2.0",
+    "moment": "^2.16.0"
   },
   "devDependencies": {
-    "mocha": "^2.0.1"
+    "mocha": "^3.1.2"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha test/*.js --ui tdd"
