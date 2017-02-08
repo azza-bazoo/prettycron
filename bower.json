@@ -1,7 +1,7 @@
 {
   "name": "prettycron",
   "main": "prettycron.js",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "homepage": "http://azza-bazoo.github.io/prettycron/",
   "authors": [
     "Hourann Bosci (http://hourann.com)"
