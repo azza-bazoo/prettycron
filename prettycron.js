@@ -182,27 +182,28 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
           var last_val = hm.pop();
           output_text = hm.join(', ') + '和' + last_val;
         }
-      } else {
-
-        // Otherwise, list out every specified hour/minute value.
-        const isMinuteOnly0 = f1 && f1[0] === 0 && f1.length === 1;
-        if (f2 && f1) { // runs only at specific hours and specific minutes
-          if (isMinuteOnly0) {
-            output_text = f2.join(',') + '点';
+      } else { // Otherwise, list out every specified hour/minute value.
+        var transF2 = function(f2) {
+          if (f2) {
+            return f2.join(',') + '点';
           } else {
-            output_text = f2.join(',') + '点的第' + f1.join(',') + '分钟';
+            return '每小时';
           }
-        } else if (f2 && !f1) { // specific hours, but every minute
-          output_text = f2.join(',') + '点每分钟';
-        } else if (!f2 && f1) { // every hour, but specific minutes
-          if (isMinuteOnly0) {
-            output_text = '每小时';
-          } else {
-            output_text = '每小时第' + f1.join(',') + '分钟';
-          }
-        } else { // cronspec has "*" for both hour and minute
-          output_text = '每小时每分钟';
         }
+        var transF1 = function(f1) {
+          if (!f1) {
+            return '每分钟';
+          }
+          if (f1[0] === 0 && f1.length === 1) {
+            return '';
+          }
+          var step = stepSize(f1);
+          if (isStepValue(step, f1)) {
+            return '每隔' + step + '分钟';
+          }
+          return '第' + f1.join(',') + '分钟';
+        }
+        output_text = transF2(f2) + transF1(f1);
       }
       return output_text;
     }
@@ -270,8 +271,8 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
 
     var everySecond = useSeconds && schedule['s'] === undefined,
         everyMinute = schedule['m'] === undefined,
-        everyHour = schedule['h'] === undefined
-        everyWeekday = schedule['d'] === undefined
+        everyHour = schedule['h'] === undefined,
+        everyWeekday = schedule['d'] === undefined,
         everyDayInMonth = schedule['D'] === undefined,
         everyMonth = schedule['M'] === undefined;
 
@@ -305,7 +306,6 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       if (everyWeekday && everyDayInMonth) {
         textParts.push('every day');
       }
-
     } else {
       var seconds = getSecondsTextParts(schedule['s']);
       var minutes = getMinutesTextParts(schedule['m']);
@@ -438,6 +438,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window.prettyCron = {};
 
   global_obj.toString = toString;
+  global_obj.toStringCN = toStringCN;
   global_obj.getNext = getNext;
   global_obj.getNextDate = getNextDate;
   global_obj.getNextDates = getNextDates;
