@@ -84,10 +84,10 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       minutes.text = 'hour, on the hour';
     } else if( isEveryOther( stepsize, numbers ) ) {
       minutes.beginning = 'other minute';
-    } else if( isStepValue( stepsize, numbers ) ) {
-      minutes.text = stepsize + ' minutes';
     } else if( isTwicePerHour( stepsize, numbers ) ) {
       minutes.text = 'first and 30th minute';
+    } else if( isStepValue( stepsize, numbers ) ) {
+      minutes.text = stepsize + ' minutes';
     } else {
       minutes.text = numberList(numbers) + ' minute';
     }
@@ -103,12 +103,13 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     if( !numbers ) {
       return { beginning: 'second', text: '' };
     }
+    var isHalf = numbers.length === 2 && stepsize === 30;
     if( isEveryOther( stepsize, numbers ) ) {
       return { beginning: '', text: 'other second' };
-    } else if( isStepValue( stepsize, numbers ) ) {
+    } else if( isStepValue( stepsize, numbers ) && !isHalf ) {
       return { beginning: '', text: stepsize + ' seconds' };
     } else {
-      return { beginning: 'minute', text: 'starting on the ' + (numbers.length === 2 && stepsize === 30 ? 'first and 30th second' : numberList(numbers) + ' second') };
+      return { beginning: 'minute', text: 'starting on the ' + (isHalf ? 'first and 30th second' : numberList(numbers) + ' second') };
     }
   };
 
