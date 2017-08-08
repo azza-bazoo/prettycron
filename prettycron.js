@@ -65,7 +65,8 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   };
   var isStepValue = function(stepsize, numbers) {
     // Value with slash (https://en.wikipedia.org/wiki/Cron#Non-Standard_Characters)
-    return numbers.length > 2 && stepsize > 0;
+    var minLen = Math.ceil(60 / stepsize, 10);
+    return stepsize > 0 && minLen === numbers.length;
   };
   /*
    * For an array of numbers of seconds, return a string
