@@ -33,7 +33,7 @@ var prettyCron = require('prettycron');
 
 ## Usage
 
-prettyCron exposes two methods, both of which take a cron specification as the only argument.
+prettyCron exposes three methods, both of which take a cron specification as the only argument.
 
 ### prettyCron.toString(cron)
 
