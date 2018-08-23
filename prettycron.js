@@ -65,7 +65,8 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   };
   var isStepValue = function(stepsize, numbers) {
     // Value with slash (https://en.wikipedia.org/wiki/Cron#Non-Standard_Characters)
-    return numbers.length > 2 && stepsize > 0;
+    var minLen = Math.ceil(60 / stepsize, 10);
+    return stepsize > 0 && minLen === numbers.length;
   };
   /*
    * For an array of numbers of seconds, return a string
@@ -83,10 +84,10 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       minutes.text = 'hour, on the hour';
     } else if( isEveryOther( stepsize, numbers ) ) {
       minutes.beginning = 'other minute';
-    } else if( isStepValue( stepsize, numbers ) ) {
-      minutes.text = stepsize + ' minutes';
     } else if( isTwicePerHour( stepsize, numbers ) ) {
       minutes.text = 'first and 30th minute';
+    } else if( isStepValue( stepsize, numbers ) ) {
+      minutes.text = stepsize + ' minutes';
     } else {
       minutes.text = numberList(numbers) + ' minute';
     }
@@ -102,12 +103,13 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     if( !numbers ) {
       return { beginning: 'second', text: '' };
     }
+    var isHalf = numbers.length === 2 && stepsize === 30;
     if( isEveryOther( stepsize, numbers ) ) {
       return { beginning: '', text: 'other second' };
-    } else if( isStepValue( stepsize, numbers ) ) {
+    } else if( isStepValue( stepsize, numbers ) && !isHalf ) {
       return { beginning: '', text: stepsize + ' seconds' };
     } else {
-      return { beginning: 'minute', text: 'starting on the ' + (numbers.length === 2 && stepsize === 30 ? 'first and 30th second' : numberList(numbers) + ' second') };
+      return { beginning: 'minute', text: 'starting on the ' + (isHalf ? 'first and 30th second' : numberList(numbers) + ' second') };
     }
   };
 
@@ -164,6 +166,97 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
    * Given a schedule from later.js (i.e. after parsing the cronspec),
    * generate a friendly sentence description.
    */
+  var scheduleToSentenceCN = function (schedule) {
+    var transF1F2 = function (f1, f2) {
+      var output_text = '';
+      if (f2 && f1 && f2.length <= 2 && f1.length <= 2) {
+        // If there are only one or two specified values for
+        // hour or minute, print them in HH:MM format
+        var hm = [];
+        for (var i = 0; i < f2.length; i++) {
+          for (var j = 0; j < f1.length; j++) {
+            hm.push(zeroPad(f2[i]) + ':' + zeroPad(f1[j]));
+          }
+        }
+        if (hm.length < 2) {
+          output_text = hm[0];
+        } else {
+          var last_val = hm.pop();
+          output_text = hm.join(', ') + '和' + last_val;
+        }
+      } else { // Otherwise, list out every specified hour/minute value.
+        var transF2 = function(f2) {
+          if (f2) {
+            return f2.join(',') + '点';
+          } else {
+            return '每小时';
+          }
+        }
+        var transF1 = function(f1) {
+          if (!f1) {
+            return '每分钟';
+          }
+          if (f1[0] === 0 && f1.length === 1) {
+            return '';
+          }
+          var step = stepSize(f1);
+          if (isStepValue(step, f1)) {
+            return '每隔' + step + '分钟';
+          }
+          return '第' + f1.join(',') + '分钟';
+        }
+        output_text = transF2(f2) + transF1(f1);
+      }
+      return output_text;
+    }
+    var transF3 = function (f3) {
+      if (f3) {
+        return f3.join(',') + '日';
+      } else {
+        return '';
+      }
+    }
+    var transF4 = function (f4) {
+      if (f4) {
+        return f4.join(',') + '月';
+      } else {
+        return '';
+      }
+    }
+    var transF5 = function (f5) {
+      if (f5) {
+        var ws = ['日', '一', '二', '三', '四', '五', '六', '日'];
+        var weeks = f5.map(function (item) {
+          return '周' + ws[item];
+        });
+        return weeks.join(',');
+      } else {
+        return '';
+      }
+    }
+    var f1 = schedule['m'];
+    var f2 = schedule['h'];
+    var f3 = schedule['D'];
+    var f4 = schedule['M'];
+    var f5 = schedule['d'];
+    var timeDes = transF1F2(f1, f2);
+    var dayDes = transF3(f3);
+    var MonDes = transF4(f4);
+    var weekDes = transF5(f5);
+    var dateDes = '';
+    if (dayDes && weekDes) {
+      MonDes = MonDes ? MonDes : '每月';
+      dateDes = MonDes + dayDes + '和' + weekDes;
+    } else if (!dayDes && !weekDes) {
+      dateDes = MonDes + '每天';
+    } else if (dayDes && !weekDes) {
+      MonDes = MonDes ? MonDes : '每月';
+      dateDes = MonDes + dayDes + weekDes;
+    } else {
+      dateDes = MonDes + weekDes;
+    }
+    return dateDes + timeDes;
+  }
   var scheduleToSentence = function(schedule, useSeconds) {
     var textParts = [];
 
@@ -180,8 +273,8 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
 
     var everySecond = useSeconds && schedule['s'] === undefined,
         everyMinute = schedule['m'] === undefined,
-        everyHour = schedule['h'] === undefined
-        everyWeekday = schedule['d'] === undefined
+        everyHour = schedule['h'] === undefined,
+        everyWeekday = schedule['d'] === undefined,
         everyDayInMonth = schedule['D'] === undefined,
         everyMonth = schedule['M'] === undefined;
 
@@ -215,7 +308,6 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       if (everyWeekday && everyDayInMonth) {
         textParts.push('every day');
       }
-
     } else {
       var seconds = getSecondsTextParts(schedule['s']);
       var minutes = getMinutesTextParts(schedule['m']);
@@ -302,7 +394,10 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
     var schedule = later.parse.cron(cronspec, sixth);
     return scheduleToSentence(schedule['schedules'][0], sixth);
   };
-
+  var toStringCN = function (cronspec, sixth) {
+    var schedule = later.parse.cron(cronspec, sixth);
+    return scheduleToSentenceCN(schedule['schedules'][0]);
+  };
   /*
    * Given a cronspec, return the next date for when it will next run.
    * (This is just a wrapper for later.js)
@@ -345,6 +440,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   var global_obj = (typeof exports !== "undefined" && exports !== null) ? exports : window.prettyCron = {};
 
   global_obj.toString = toString;
+  global_obj.toStringCN = toStringCN;
   global_obj.getNext = getNext;
   global_obj.getNextDate = getNextDate;
   global_obj.getNextDates = getNextDates;
