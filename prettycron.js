@@ -57,8 +57,8 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
   var isEveryOther = function(stepsize, numbers) {
     return numbers.length === 30 && stepsize === 2;
   };
-  var isTwicePerHour = function(stepsize, numbers) {
-    return numbers.length === 2 && stepsize === 30;
+  var isTwicePerHourOnTheHour = function(stepsize, numbers) {
+    return numbers.length === 2 && numbers[0] === 0 && stepsize === 30;
   };
   var isOnTheHour = function(numbers) {
     return numbers.length === 1 && numbers[0] === 0;
@@ -85,7 +85,7 @@ if ((!moment || !later) && (typeof require !== 'undefined')) {
       minutes.beginning = 'other minute';
     } else if( isStepValue( stepsize, numbers ) ) {
       minutes.text = stepsize + ' minutes';
-    } else if( isTwicePerHour( stepsize, numbers ) ) {
+    } else if( isTwicePerHourOnTheHour( stepsize, numbers )) {
       minutes.text = 'first and 30th minute';
     } else {
       minutes.text = numberList(numbers) + ' minute';
