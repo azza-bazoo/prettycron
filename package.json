@@ -11,7 +11,7 @@
   "license": "LGPL",
   "readmeFilename": "README.md",
   "dependencies": {
-    "later": "^1.2.0",
+    "later": "github:RickCarlino/later",
     "moment": "^2.16.0"
   },
   "devDependencies": {
